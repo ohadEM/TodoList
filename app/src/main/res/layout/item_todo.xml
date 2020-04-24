@@ -28,6 +28,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:onClick="deleteTask"
         android:text="Done"
         tools:layout_editor_absoluteX="307dp"
         tools:layout_editor_absoluteY="16dp" />

@@ -12,6 +12,7 @@ package com.example.todolist;
         import android.view.MenuInflater;
         import android.view.MenuItem;
         import android.view.View;
+        import android.view.ViewGroup;
         import android.widget.ArrayAdapter;
         import android.widget.EditText;
         import android.widget.ListView;
@@ -33,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mHelper = new TaskDbHelper(this);
-        mTaskListView = (ListView) findViewById(R.id.list_todo);
+        mTaskListView = findViewById(R.id.list_todo);
+
     }
 
     @Override
@@ -46,23 +48,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()) {
-            case R.id.action_add_task:
-                final EditText taskEditText = new EditText(this);
+        if (item.getItemId() == R.id.action_add_task) {
+            final EditText taskEditText = new EditText(this);
 
-                AlertDialog dialog = new AlertDialog.Builder(this)
-                        .setTitle("Add a new task")
-                        .setMessage("What do you want to do next?")
-                        .setView(taskEditText)
-                        .setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                String task = String.valueOf((taskEditText.getText()));
-//                                Log.d(TAG, "Task to add: " + task);
-                                addTask(task);
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle("Add a new task")
+                    .setMessage("What do you want to do next?")
+                    .setView(taskEditText)
+                    .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String task = String.valueOf((taskEditText.getText()));
+                            addTask(task);
 
 
-                                //Using the database.
+                            //Using the database.
 //                                SQLiteDatabase db = mHelper.getWritableDatabase();
 //                                ContentValues values = new ContentValues();
 //
@@ -72,25 +72,23 @@ public class MainActivity extends AppCompatActivity {
 //                                        values,
 //                                        SQLiteDatabase.CONFLICT_REPLACE);
 //                                db.close();
-                            }
-                        })
-                        .setNegativeButton("Cancel", null)
-                        .create();
-                dialog.show();
+                        }
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .create();
+            dialog.show();
 
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     public void deleteTask(View view) {
         View parent = (View) view.getParent();
-        TextView taskTextView = (TextView) parent.findViewById(R.id.task_title);
+        TextView taskTextView = parent.findViewById(R.id.task_title);
         String task = String.valueOf(taskTextView.getText());
-
-        //TODO: implement this method.
+        mAdapter.remove(task);
+        mAdapter.notifyDataSetChanged();
     }
 
 
@@ -98,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
     private void addTask(String task){
         ArrayList<String> taskList = new ArrayList<>();
         taskList.add(task);
+        Log.d(TAG, taskList.toString());
 
 
         if(mAdapter == null) {
