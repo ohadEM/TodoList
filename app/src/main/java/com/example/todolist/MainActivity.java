@@ -1,40 +1,48 @@
 package com.example.todolist;
 
-        import androidx.appcompat.app.AlertDialog;
-        import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-        import android.content.ContentValues;
-        import android.content.DialogInterface;
-        import android.database.sqlite.SQLiteDatabase;
-        import android.os.Bundle;
-        import android.util.Log;
-        import android.view.Menu;
-        import android.view.MenuInflater;
-        import android.view.MenuItem;
-        import android.view.View;
-        import android.view.ViewGroup;
-        import android.widget.ArrayAdapter;
-        import android.widget.EditText;
-        import android.widget.ListView;
-        import android.widget.TextView;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.TextView;
 
-        import java.util.ArrayList;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private TaskDbHelper mHelper;
-    private ListView mTaskListView;
-    private ArrayAdapter<String> mAdapter;
+    //private ListView mTaskListView;
+    private RecyclerView mTaskRecycleView;
+    //private ArrayAdapter<String> mAdapter;
+    private CustomAdapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //Creating database.
+        // Creating database
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mHelper = new TaskDbHelper(this);
-        mTaskListView = findViewById(R.id.list_todo);
+        mTaskRecycleView = findViewById(R.id.list_todo);
+
+        // Use a linear layout manager
+        mLayoutManager = new LinearLayoutManager(this);
+        mTaskRecycleView.setLayoutManager(mLayoutManager);
+
+        // Specify an adapter
+        mAdapter = new CustomAdapter();
+        mTaskRecycleView.setAdapter(mAdapter);
 
     }
 
@@ -42,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
 
-        return  super.onCreateOptionsMenu(menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -83,32 +91,22 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void deleteTask(View view) {
-        View parent = (View) view.getParent();
-        TextView taskTextView = parent.findViewById(R.id.task_title);
-        String task = String.valueOf(taskTextView.getText());
-        mAdapter.remove(task);
-        mAdapter.notifyDataSetChanged();
-    }
+//    public void deleteTask(View view) {
+//        View parent = (View) view.getParent();
+//        TextView taskTextView = parent.findViewById(R.id.task_title);
+//        String task = String.valueOf(taskTextView.getText());
+//        mAdapter.remove(task);
+//        mAdapter.notifyDataSetChanged();
+//   }
 
 
-
-    private void addTask(String task){
+    private void addTask(String task) {
         ArrayList<String> taskList = new ArrayList<>();
         taskList.add(task);
         Log.d(TAG, taskList.toString());
 
+        mAdapter.add(task);
+        mAdapter.notifyDataSetChanged();
 
-        if(mAdapter == null) {
-
-            mAdapter = new ArrayAdapter<>(this,
-                    R.layout.item_todo,
-                    R.id.task_title,
-                    taskList);
-            mTaskListView.setAdapter(mAdapter);
-        } else {
-            mAdapter.add(task);
-            mAdapter.notifyDataSetChanged();
-        }
     }
 }
