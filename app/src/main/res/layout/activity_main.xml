@@ -6,12 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
+    <include
         android:id="@+id/list_todo"
-        android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_width="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/list_done"
+        app:layout_constraintTop_toTopOf="parent"
+        layout="@layout/list_item"/>
+
+    <include
+        android:id="@+id/list_done"
+        android:layout_height="0dp"
+        android:layout_width="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/list_todo"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        layout="@layout/list_item"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

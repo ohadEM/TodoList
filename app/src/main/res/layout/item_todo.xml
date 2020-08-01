@@ -16,10 +16,21 @@
         app:layout_constraintTop_toTopOf="@id/task_delete"
         app:layout_constraintBottom_toBottomOf="@id/task_delete"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/task_delete"
+        app:layout_constraintEnd_toStartOf="@id/task_switch"
         android:text="Hello"
         android:textSize="20sp"
         tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <Button
+        android:id="@+id/task_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/task_title"
+        app:layout_constraintEnd_toStartOf="@id/task_delete"
+        android:text="Switch"
+        tools:layout_editor_absoluteX="307dp"
         tools:layout_editor_absoluteY="16dp" />
 
     <Button
@@ -27,11 +38,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/task_switch"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="Done"
+        android:text="Remove"
         tools:layout_editor_absoluteX="307dp"
         tools:layout_editor_absoluteY="16dp" />
 
-    <!--</RelativeLayout>-->
-<!--    android:onClick="deleteTask"-->
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

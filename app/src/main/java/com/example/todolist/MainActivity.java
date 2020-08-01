@@ -10,21 +10,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private TaskDbHelper mHelper;
-    //private ListView mTaskListView;
-    private RecyclerView mTaskRecycleView;
-    //private ArrayAdapter<String> mAdapter;
-    private CustomAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private RecyclerView mTaskTodoRecycleView, mTaskDoneRecycleView;
+    private CustomAdapter mTodoAdapter, mDoneAdapter;
+    private RecyclerView.LayoutManager mTodoLayoutManager, mDoneLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,15 +29,22 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mHelper = new TaskDbHelper(this);
-        mTaskRecycleView = findViewById(R.id.list_todo);
+        mTaskTodoRecycleView = findViewById(R.id.list_todo).findViewById(R.id.list);
+        mTaskDoneRecycleView = findViewById(R.id.list_done).findViewById(R.id.list);
 
         // Use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(this);
-        mTaskRecycleView.setLayoutManager(mLayoutManager);
+        mTodoLayoutManager = new LinearLayoutManager(this);
+        mTaskTodoRecycleView.setLayoutManager(mTodoLayoutManager);
+
+        mDoneLayoutManager = new LinearLayoutManager(this);
+        mTaskDoneRecycleView.setLayoutManager(mDoneLayoutManager);
 
         // Specify an adapter
-        mAdapter = new CustomAdapter();
-        mTaskRecycleView.setAdapter(mAdapter);
+        mTodoAdapter = new CustomAdapter();
+        mTaskTodoRecycleView.setAdapter(mTodoAdapter);
+
+        mDoneAdapter = new CustomAdapter();
+        mTaskDoneRecycleView.setAdapter(mDoneAdapter);
 
     }
 
@@ -91,22 +93,14 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-//    public void deleteTask(View view) {
-//        View parent = (View) view.getParent();
-//        TextView taskTextView = parent.findViewById(R.id.task_title);
-//        String task = String.valueOf(taskTextView.getText());
-//        mAdapter.remove(task);
-//        mAdapter.notifyDataSetChanged();
-//   }
-
-
     private void addTask(String task) {
         ArrayList<String> taskList = new ArrayList<>();
         taskList.add(task);
         Log.d(TAG, taskList.toString());
 
-        mAdapter.add(task);
-        mAdapter.notifyDataSetChanged();
+        mTodoAdapter.add(task);
+        mTodoAdapter.notifyDataSetChanged();
 
     }
+
 }
