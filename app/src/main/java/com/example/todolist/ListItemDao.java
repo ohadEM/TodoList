@@ -1,12 +1,15 @@
 package com.example.todolist;
 
+import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@Dao
 public interface ListItemDao {
     @Query("SELECT * FROM ListItem")
     List<ListItem> getAll();
@@ -23,6 +26,6 @@ public interface ListItemDao {
     @Insert
     void insertAll(ListItem... items);
 
-    @Delete
-    void delete(ListItem item);
+    @Query("DELETE FROM ListItem WHERE task = :item")
+    void delete(String item);
 }

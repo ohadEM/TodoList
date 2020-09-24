@@ -11,10 +11,17 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
 
     private ArrayList<String> mDataset;
+    private TaskListController mController;
+
+    public CustomAdapter(TaskListController controller) {
+
+        mController = controller;
+    }
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -37,8 +44,8 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
         mDataset = new ArrayList<>();
     }
 
-    public CustomAdapter(ArrayList<String> myDataset) {
-        mDataset = myDataset;
+    public CustomAdapter(List<ListItem> myDataset) {
+        mDataset = listToArrayList(myDataset);
     }
 
     // Create new views (invoked by the layout manager)
@@ -67,6 +74,8 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
                 notifyItemRemoved(holder.getAdapterPosition());
                 notifyItemRangeChanged(holder.getAdapterPosition(), mDataset.size());
 //                mAdapter.notifyDataSetChanged();
+
+                mController.remove(currentData);
             }
         });
     }
@@ -81,4 +90,19 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
         mDataset.add(task);
         notifyItemInserted(mDataset.size() - 1);
     }
+
+    public void addList(List<ListItem> listItems) {
+
+        mDataset = listToArrayList(listItems);
+    }
+
+    private ArrayList<String> listToArrayList (List<ListItem> listItems) {
+        ArrayList<String> list = new ArrayList<>();
+        for (ListItem item : listItems) {
+            list.add(item.task);
+        }
+
+        return list;
+    }
+
 }

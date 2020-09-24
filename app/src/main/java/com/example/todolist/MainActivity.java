@@ -13,6 +13,9 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -28,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final TaskListController controller = TaskListController.getInstance();
+        controller.mActivity = this;
+
         mHelper = new TaskDbHelper(this);
         mTaskTodoRecycleView = findViewById(R.id.list_todo).findViewById(R.id.list);
         mTaskDoneRecycleView = findViewById(R.id.list_done).findViewById(R.id.list);
@@ -39,12 +45,18 @@ public class MainActivity extends AppCompatActivity {
         mDoneLayoutManager = new LinearLayoutManager(this);
         mTaskDoneRecycleView.setLayoutManager(mDoneLayoutManager);
 
+
+
+        controller.activityCreate();
+
         // Specify an adapter
-        mTodoAdapter = new CustomAdapter();
+        mTodoAdapter = new CustomAdapter(controller);
         mTaskTodoRecycleView.setAdapter(mTodoAdapter);
 
-        mDoneAdapter = new CustomAdapter();
+        mDoneAdapter = new CustomAdapter(controller);
         mTaskDoneRecycleView.setAdapter(mDoneAdapter);
+
+
 
     }
 
@@ -75,17 +87,6 @@ public class MainActivity extends AppCompatActivity {
                             //String task = String.valueOf((taskEditText.getText()));
                             addTask(item);
 
-
-                            //Using the database.
-//                                SQLiteDatabase db = mHelper.getWritableDatabase();
-//                                ContentValues values = new ContentValues();
-//
-//                                values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
-//                                db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
-//                                        null,
-//                                        values,
-//                                        SQLiteDatabase.CONFLICT_REPLACE);
-//                                db.close();
                         }
                     })
                     .setNegativeButton("Cancel", null)
@@ -97,19 +98,52 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void addTask(ListItem item) {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        TaskListController.getInstance().mActivity = null;
+    }
 
-        DatabaseClient.getInstance(getApplicationContext()).getAppDatabase()
-                .listItemDao()
-                .insertAll(item);
+    //TODO: insert in controller.
+    private void addTask(final ListItem item) {
 
-        ArrayList<String> taskList = new ArrayList<>();
-        taskList.add(item.task);
-        Log.d(TAG, taskList.toString());
+        Executor myExecutor = Executors.newSingleThreadExecutor();
+        myExecutor.execute(new Runnable() {
+                               @Override
+                               public void run() {
+                                   DatabaseClient.getInstance(getApplicationContext()).getAppDatabase()
+                                           .listItemDao()
+                                           .insertAll(item);
+                               }
+                           });
+
+//        ArrayList<String> taskList = new ArrayList<>();
+//        taskList.add(item.task);
+//        Log.d(TAG, taskList.toString());
 
         mTodoAdapter.add(item.task);
-        mTodoAdapter.notifyDataSetChanged();
+//        mTodoAdapter.notifyDataSetChanged();
 
     }
 
+    //TODO: insert in controller.
+    public void remove(final String currentData) {
+        Executor myExecutor = Executors.newSingleThreadExecutor();
+        myExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                DatabaseClient.getInstance(getApplicationContext()).getAppDatabase()
+                        .listItemDao()
+                        .delete(currentData);
+            }
+        });
+    }
+
+    public void setUnfinishedItems(List<ListItem> listUnfinishedItems) {
+        mTodoAdapter.addList(listUnfinishedItems);
+    }
+
+    public void setFinishedItems(List<ListItem> listFinishedItems) {
+        mDoneAdapter.addList(listFinishedItems);
+    }
 }
