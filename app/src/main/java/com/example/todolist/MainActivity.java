@@ -68,8 +68,12 @@ public class MainActivity extends AppCompatActivity {
                     .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            String task = String.valueOf((taskEditText.getText()));
-                            addTask(task);
+
+                            ListItem item = new ListItem();
+                            item.task = String.valueOf((taskEditText.getText()));
+                            item.isDone = false;
+                            //String task = String.valueOf((taskEditText.getText()));
+                            addTask(item);
 
 
                             //Using the database.
@@ -93,12 +97,17 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void addTask(String task) {
+    private void addTask(ListItem item) {
+
+        DatabaseClient.getInstance(getApplicationContext()).getAppDatabase()
+                .listItemDao()
+                .insertAll(item);
+
         ArrayList<String> taskList = new ArrayList<>();
-        taskList.add(task);
+        taskList.add(item.task);
         Log.d(TAG, taskList.toString());
 
-        mTodoAdapter.add(task);
+        mTodoAdapter.add(item.task);
         mTodoAdapter.notifyDataSetChanged();
 
     }

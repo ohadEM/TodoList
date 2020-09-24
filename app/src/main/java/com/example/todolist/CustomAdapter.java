@@ -77,6 +77,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
     }
 
     public void add(String task) {
+
         mDataset.add(task);
         notifyItemInserted(mDataset.size() - 1);
     }
