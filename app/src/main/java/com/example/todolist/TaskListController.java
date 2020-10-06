@@ -12,17 +12,37 @@ public class TaskListController {
 
     private static TaskListController instance;
 
-    public static  TaskListController getInstance(){
+    public static  TaskListController getInstance() {
      if (instance == null) {
          instance = new TaskListController();
      }
      return instance;
     }
 
-    public void remove(String currentData) {
+    public void remove(final String currentData) {
         if (mActivity != null) {
-            mActivity.remove(currentData);
+            Executor myExecutor = Executors.newSingleThreadExecutor();
+            myExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    DatabaseClient.getInstance(mActivity).getAppDatabase()
+                            .listItemDao()
+                            .delete(currentData);
+                }
+            });
         }
+    }
+
+    public void addTask(final ListItem item) {
+        Executor myExecutor = Executors.newSingleThreadExecutor();
+        myExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                DatabaseClient.getInstance(mActivity).getAppDatabase()
+                        .listItemDao()
+                        .insertAll(item);
+            }
+        });
     }
 
     public void activityCreate() {

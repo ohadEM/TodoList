@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
                             ListItem item = new ListItem();
                             item.task = String.valueOf((taskEditText.getText()));
                             item.isDone = false;
-                            //String task = String.valueOf((taskEditText.getText()));
                             addTask(item);
 
                         }
@@ -104,40 +103,11 @@ public class MainActivity extends AppCompatActivity {
         TaskListController.getInstance().mActivity = null;
     }
 
-    //TODO: insert in controller.
+    //TODO: insert in controller - Done.
     private void addTask(final ListItem item) {
-
-        Executor myExecutor = Executors.newSingleThreadExecutor();
-        myExecutor.execute(new Runnable() {
-                               @Override
-                               public void run() {
-                                   DatabaseClient.getInstance(getApplicationContext()).getAppDatabase()
-                                           .listItemDao()
-                                           .insertAll(item);
-                               }
-                           });
-
-//        ArrayList<String> taskList = new ArrayList<>();
-//        taskList.add(item.task);
-//        Log.d(TAG, taskList.toString());
-
-        mTodoAdapter.add(item.task);
-//        mTodoAdapter.notifyDataSetChanged();
-
+        mTodoAdapter.add(item);
     }
 
-    //TODO: insert in controller.
-    public void remove(final String currentData) {
-        Executor myExecutor = Executors.newSingleThreadExecutor();
-        myExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                DatabaseClient.getInstance(getApplicationContext()).getAppDatabase()
-                        .listItemDao()
-                        .delete(currentData);
-            }
-        });
-    }
 
     public void setUnfinishedItems(List<ListItem> listUnfinishedItems) {
         mTodoAdapter.addList(listUnfinishedItems);

@@ -30,12 +30,14 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
 
         // each data item is just a string and button in this case
         public TextView textView;
-        public Button button;
+        public Button deleteBtn;
+        public Button switchBtn;
 
         public MyViewHolder(ConstraintLayout v) {
             super(v);
             textView = v.findViewById(R.id.task_title);
-            button = v.findViewById(R.id.task_delete);
+            deleteBtn = v.findViewById(R.id.task_delete);
+            switchBtn = v.findViewById(R.id.task_switch);
         }
     }
 
@@ -67,7 +69,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
         final String currentData = mDataset.get(position);
         holder.textView.setText(currentData);
 
-        holder.button.setOnClickListener(new View.OnClickListener() {
+        holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDataset.remove(holder.getAdapterPosition());
@@ -75,7 +77,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
                 notifyItemRangeChanged(holder.getAdapterPosition(), mDataset.size());
 //                mAdapter.notifyDataSetChanged();
 
-                mController.remove(currentData);
+                remove(currentData);
             }
         });
     }
@@ -85,10 +87,18 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
         return mDataset.size();
     }
 
-    public void add(String task) {
 
-        mDataset.add(task);
+    public void add(ListItem item) {
+
+        mDataset.add(item.task);
         notifyItemInserted(mDataset.size() - 1);
+
+        mController.addTask(item);
+
+    }
+
+    public void remove(String item) {
+        mController.remove(item);
     }
 
     public void addList(List<ListItem> listItems) {
