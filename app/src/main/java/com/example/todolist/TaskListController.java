@@ -19,6 +19,30 @@ public class TaskListController {
      return instance;
     }
 
+    public void activityCreate() {
+        Executor myExecutor = Executors.newSingleThreadExecutor();
+        myExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                if (mActivity == null) return;
+
+                List<ListItem> listUnfinishedItems = DatabaseClient.getInstance(mActivity.getApplicationContext()).getAppDatabase()
+                        .listItemDao()
+                        .loadAllUnfinishedTasks();
+
+                mActivity.setUnfinishedItems(listUnfinishedItems);
+
+
+                List<ListItem> listFinishedItems = DatabaseClient.getInstance(mActivity.getApplicationContext()).getAppDatabase()
+                        .listItemDao()
+                        .loadAllFinishedTasks();
+
+                mActivity.setFinishedItems(listFinishedItems);
+            }
+        });
+    }
+
     public void remove(final String currentData) {
         if (mActivity != null) {
             Executor myExecutor = Executors.newSingleThreadExecutor();
@@ -45,27 +69,20 @@ public class TaskListController {
         });
     }
 
-    public void activityCreate() {
+    public void replace(final String item) {
         Executor myExecutor = Executors.newSingleThreadExecutor();
         myExecutor.execute(new Runnable() {
             @Override
             public void run() {
-
-                if (mActivity == null) return;
-
-                List<ListItem> listUnfinishedItems = DatabaseClient.getInstance(mActivity.getApplicationContext()).getAppDatabase()
+                ListItem tempItem = DatabaseClient.getInstance(mActivity).getAppDatabase()
                         .listItemDao()
-                        .loadAllUnfinishedTasks();
-
-                mActivity.setUnfinishedItems(listUnfinishedItems);
-
-
-                List<ListItem> listFinishedItems = DatabaseClient.getInstance(mActivity.getApplicationContext()).getAppDatabase()
+                        .getItem(item);
+                DatabaseClient.getInstance(mActivity).getAppDatabase()
                         .listItemDao()
-                        .loadAllFinishedTasks();
-
-                mActivity.setFinishedItems(listFinishedItems);
+                        .updateTour(item, !tempItem.isDone);
+                mActivity.replace(item, !tempItem.isDone);
             }
         });
     }
+
 }

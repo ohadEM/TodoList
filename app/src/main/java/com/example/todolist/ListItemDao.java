@@ -26,6 +26,12 @@ public interface ListItemDao {
     @Insert
     void insertAll(ListItem... items);
 
+    @Query("SELECT * FROM ListItem WHERE task = :item")
+    ListItem getItem(String item);
+
     @Query("DELETE FROM ListItem WHERE task = :item")
     void delete(String item);
+
+    @Query("UPDATE ListItem SET isDone = :value WHERE task = :item")
+    void updateTour(String item, boolean value);
 }

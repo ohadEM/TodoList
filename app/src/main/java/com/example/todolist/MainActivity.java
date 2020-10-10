@@ -7,15 +7,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -38,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
         mTaskTodoRecycleView = findViewById(R.id.list_todo).findViewById(R.id.list);
         mTaskDoneRecycleView = findViewById(R.id.list_done).findViewById(R.id.list);
 
+        TextView text = findViewById(R.id.list_done).findViewById(R.id.list_header);
+        text.setText("Finished List:");
+
         // Use a linear layout manager
         mTodoLayoutManager = new LinearLayoutManager(this);
         mTaskTodoRecycleView.setLayoutManager(mTodoLayoutManager);
@@ -50,10 +51,10 @@ public class MainActivity extends AppCompatActivity {
         controller.activityCreate();
 
         // Specify an adapter
-        mTodoAdapter = new CustomAdapter(controller);
+        mTodoAdapter = new CustomAdapter(controller, false);
         mTaskTodoRecycleView.setAdapter(mTodoAdapter);
 
-        mDoneAdapter = new CustomAdapter(controller);
+        mDoneAdapter = new CustomAdapter(controller, true);
         mTaskDoneRecycleView.setAdapter(mDoneAdapter);
 
 
@@ -115,5 +116,22 @@ public class MainActivity extends AppCompatActivity {
 
     public void setFinishedItems(List<ListItem> listFinishedItems) {
         mDoneAdapter.addList(listFinishedItems);
+    }
+
+    public void replace(final String item, final boolean isDone) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ListItem listItem = new ListItem(item, isDone);
+                listItem.task = item;
+                listItem.isDone = isDone;
+
+                if (isDone) {
+                    mDoneAdapter.add(listItem, true);
+                } else {
+                    mTodoAdapter.add(listItem, true);
+                }
+            }
+        });
     }
 }

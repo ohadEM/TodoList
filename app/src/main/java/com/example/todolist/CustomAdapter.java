@@ -17,10 +17,12 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
 
     private ArrayList<String> mDataset;
     private TaskListController mController;
+    public final boolean mIsDone;
 
-    public CustomAdapter(TaskListController controller) {
+    public CustomAdapter(TaskListController controller, boolean mIsDone) {
 
         mController = controller;
+        this.mIsDone = mIsDone;
     }
 
     // Provide a reference to the views for each data item
@@ -42,12 +44,14 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public CustomAdapter() {
+    public CustomAdapter(boolean mIsDone) {
+        this.mIsDone = mIsDone;
         mDataset = new ArrayList<>();
     }
 
-    public CustomAdapter(List<ListItem> myDataset) {
+    public CustomAdapter(List<ListItem> myDataset, boolean mIsDone) {
         mDataset = listToArrayList(myDataset);
+        this.mIsDone = mIsDone;
     }
 
     // Create new views (invoked by the layout manager)
@@ -80,25 +84,50 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
                 remove(currentData);
             }
         });
+
+        holder.switchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDataset.remove(holder.getAdapterPosition());
+                notifyItemRemoved(holder.getAdapterPosition());
+                notifyItemRangeChanged(holder.getAdapterPosition(), mDataset.size());
+
+                replace(currentData);
+            }
+        });
     }
+
 
     @Override
     public int getItemCount() {
         return mDataset.size();
     }
 
+    public  void add(ListItem item) {
+        add(item, false);
+    }
 
-    public void add(ListItem item) {
+    public void add(ListItem item, boolean isExist) {
 
         mDataset.add(item.task);
         notifyItemInserted(mDataset.size() - 1);
 
-        mController.addTask(item);
-
+        if(!isExist) {
+            mController.addTask(item);
+        }
     }
 
     public void remove(String item) {
         mController.remove(item);
+    }
+
+    private void replace(String currentData) {
+
+//        ListItem item = new ListItem();
+//        item.task = currentData;
+//        item.isDone = !mIsDone;
+//        mController.replace(item);
+        mController.replace(currentData);
     }
 
     public void addList(List<ListItem> listItems) {
