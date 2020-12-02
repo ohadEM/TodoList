@@ -79,7 +79,6 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
                 mDataset.remove(holder.getAdapterPosition());
                 notifyItemRemoved(holder.getAdapterPosition());
                 notifyItemRangeChanged(holder.getAdapterPosition(), mDataset.size());
-//                mAdapter.notifyDataSetChanged();
 
                 remove(currentData);
             }
@@ -122,16 +121,10 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
     }
 
     private void replace(String currentData) {
-
-//        ListItem item = new ListItem();
-//        item.task = currentData;
-//        item.isDone = !mIsDone;
-//        mController.replace(item);
         mController.replace(currentData);
     }
 
     public void addList(List<ListItem> listItems) {
-
         mDataset = listToArrayList(listItems);
     }
 

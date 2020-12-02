@@ -3,6 +3,7 @@ package com.example.todolist;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -23,7 +24,7 @@ public interface ListItemDao {
     @Update
     void updateItems(ListItem... items);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(ListItem... items);
 
     @Query("SELECT * FROM ListItem WHERE task = :item")
