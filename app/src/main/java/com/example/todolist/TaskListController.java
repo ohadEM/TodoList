@@ -14,8 +14,7 @@ import retrofit2.Retrofit;
 public class TaskListController {
 
     public MainActivity mActivity;
-
-    private Retrofit mSellersDB;
+    public ListViewModel mModel;
 
     private static TaskListController instance;
 
@@ -44,20 +43,22 @@ public class TaskListController {
             }
         });
 
-        /*Create handle for the RetrofitInstance interface*/
-        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-        Call<SellerResponse> call = service.getAllItems();
-        call.enqueue(new Callback<SellerResponse>() {
-            @Override
-            public void onResponse(Call<SellerResponse> call, Response<SellerResponse> response) {
-                generateDataList(response.body().getData().getItems());
-            }
+        mModel.fetchDatabase(mActivity);
 
-            @Override
-            public void onFailure(Call<SellerResponse> call, Throwable t) {
-                Log.d("s", "onFailure: ");
-            }
-        });
+//        /*Create handle for the RetrofitInstance interface*/
+//        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+//        Call<SellerResponse> call = service.getAllItems();
+//        call.enqueue(new Callback<SellerResponse>() {
+//            @Override
+//            public void onResponse(Call<SellerResponse> call, Response<SellerResponse> response) {
+//                generateDataList(response.body().getData().getItems());
+//            }
+//
+//            @Override
+//            public void onFailure(Call<SellerResponse> call, Throwable t) {
+//                Log.d("s", "onFailure: ");
+//            }
+//        });
     }
 
     private void generateDataList(List<Seller> body) {
@@ -67,45 +68,48 @@ public class TaskListController {
     }
 
     public void remove(final String currentData) {
-        if (mActivity != null) {
-            Executor myExecutor = Executors.newSingleThreadExecutor();
-            myExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    DatabaseClient.getInstance(mActivity).getAppDatabase()
-                            .listItemDao()
-                            .delete(currentData);
-                }
-            });
-        }
+        mModel.remove(currentData, mActivity);
+//        if (mActivity != null) {
+//            Executor myExecutor = Executors.newSingleThreadExecutor();
+//            myExecutor.execute(new Runnable() {
+//                @Override
+//                public void run() {
+//                    DatabaseClient.getInstance(mActivity).getAppDatabase()
+//                            .listItemDao()
+//                            .delete(currentData);
+//                }
+//            });
+//        }
     }
 
     public void addTask(final ListItem item) {
-        Executor myExecutor = Executors.newSingleThreadExecutor();
-        myExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                DatabaseClient.getInstance(mActivity).getAppDatabase()
-                        .listItemDao()
-                        .insertAll(item);
-            }
-        });
+        mModel.addTask(item, mActivity);
+//        Executor myExecutor = Executors.newSingleThreadExecutor();
+//        myExecutor.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                DatabaseClient.getInstance(mActivity).getAppDatabase()
+//                        .listItemDao()
+//                        .insertAll(item);
+//            }
+//        });
     }
 
     public void replace(final String item) {
-        Executor myExecutor = Executors.newSingleThreadExecutor();
-        myExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                ListItem tempItem = DatabaseClient.getInstance(mActivity).getAppDatabase()
-                        .listItemDao()
-                        .getItem(item);
-                DatabaseClient.getInstance(mActivity).getAppDatabase()
-                        .listItemDao()
-                        .updateTour(item, !tempItem.isDone);
-                mActivity.replace(item, !tempItem.isDone);
-            }
-        });
+        mModel.replace(item, mActivity);
+//        Executor myExecutor = Executors.newSingleThreadExecutor();
+//        myExecutor.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                ListItem tempItem = DatabaseClient.getInstance(mActivity).getAppDatabase()
+//                        .listItemDao()
+//                        .getItem(item);
+//                DatabaseClient.getInstance(mActivity).getAppDatabase()
+//                        .listItemDao()
+//                        .updateTour(item, !tempItem.isDone);
+//                mActivity.replace(item, !tempItem.isDone);
+//            }
+//        });
     }
 
 }

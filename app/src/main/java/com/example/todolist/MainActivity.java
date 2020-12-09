@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         model.activityCreated(this);
+        controller.mModel = model;
 
         mTaskTodoRecycleView = findViewById(R.id.list_todo).findViewById(R.id.list);
         mTaskDoneRecycleView = findViewById(R.id.list_done).findViewById(R.id.list);
