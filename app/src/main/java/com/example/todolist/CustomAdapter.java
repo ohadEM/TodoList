@@ -16,12 +16,13 @@ import java.util.List;
 class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
 
     private ArrayList<String> mDataset;
-    private TaskListController mController;
+    private ListViewModel.OnReplaceListener listener;
+    private ListViewModel mModel;
     public final boolean mIsDone;
 
-    public CustomAdapter(TaskListController controller, boolean mIsDone) {
-
-        mController = controller;
+    public CustomAdapter(ListViewModel viewModel, ListViewModel.OnReplaceListener listener, boolean mIsDone) {
+        this.listener = listener;
+        this.mModel = viewModel;
         this.mIsDone = mIsDone;
     }
 
@@ -112,16 +113,16 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
         notifyItemInserted(mDataset.size() - 1);
 
         if(!isExist) {
-            mController.addTask(item);
+            mModel.addTask(item);
         }
     }
 
     public void remove(String item) {
-        mController.remove(item);
+        mModel.remove(item);
     }
 
     private void replace(String currentData) {
-        mController.replace(currentData);
+        mModel.replace(currentData, listener);
     }
 
     public void addList(List<ListItem> listItems) {

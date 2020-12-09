@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.Manifest;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
@@ -16,8 +15,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.List;
-
-import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -34,20 +31,23 @@ public class MainActivity extends AppCompatActivity {
 //        String[] permissions = {Manifest.permission.INTERNET};
 //        requestPermissions(permissions,);
 
-        final TaskListController controller = TaskListController.getInstance();
-        controller.mActivity = this;
 
         ListViewModel model = new ViewModelProvider(this).get(ListViewModel.class);
-        model.getStream().observe(this, new Observer<List<ListItem>>() {
+        model.getUnfinishedItemsLiveData().observe(this, new Observer<List<ListItem>>() {
             @Override
             public void onChanged(List<ListItem> users) {
                 // update UI
                 setUnfinishedItems(users);
             }
         });
+        model.getFinishedListItemsLiveData().observe(this, new Observer<List<ListItem>>() {
+            @Override
+            public void onChanged(List<ListItem> listItems) {
+                setFinishedItems(listItems);
+            }
+        });
 
-        model.activityCreated(this);
-        controller.mModel = model;
+        model.activityCreated();
 
         mTaskTodoRecycleView = findViewById(R.id.list_todo).findViewById(R.id.list);
         mTaskDoneRecycleView = findViewById(R.id.list_done).findViewById(R.id.list);
@@ -62,16 +62,20 @@ public class MainActivity extends AppCompatActivity {
         mDoneLayoutManager = new LinearLayoutManager(this);
         mTaskDoneRecycleView.setLayoutManager(mDoneLayoutManager);
 
-        // TODO: put after the adapters creations
+        ListViewModel.OnReplaceListener listener = new ListViewModel.OnReplaceListener() {
+
+            @Override
+            public void onReplace(String item, boolean isDone) {
+                replace(item, isDone);
+            }
+        };
 
         // Specify an adapter
-        mTodoAdapter = new CustomAdapter(controller, false);
+        mTodoAdapter = new CustomAdapter(model, listener, false);
         mTaskTodoRecycleView.setAdapter(mTodoAdapter);
 
-        mDoneAdapter = new CustomAdapter(controller, true);
+        mDoneAdapter = new CustomAdapter(model, listener, true);
         mTaskDoneRecycleView.setAdapter(mDoneAdapter);
-
-        controller.activityCreate();
     }
 
     @Override
@@ -109,12 +113,6 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        TaskListController.getInstance().mActivity = null;
     }
 
     private void addTask(final ListItem item) {
